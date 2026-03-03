@@ -1,0 +1,309 @@
+{
+  "name": "Discord Calendar Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.original_message.cleanContent }}",
+        "options": {
+          "systemMessage": "=你是個AI助手，請根據以下指令 :\n- 預設用繁體中中文回覆我\n- 現在時間是 {{ $now }}\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -240,
+        -384
+      ],
+      "id": "a4aa080e-92d1-4ee6-b6f9-4770300ff1dc",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -272,
+        -144
+      ],
+      "id": "522f055f-86de-4600-9ea6-24460b946e13",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "aiclNf6CddJ4EzEy",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "cbes.101065@gmail.com",
+          "mode": "list",
+          "cachedResultName": "cbes.101065@gmail.com"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "additionalFields": {
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        -32,
+        -144
+      ],
+      "id": "6743accc-7b61-4b89-bf4d-01f63313d9a0",
+      "name": "Create",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "Xj08Y7FbTwO9HweL",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "calendar": {
+          "__rl": true,
+          "value": "cbes.101065@gmail.com",
+          "mode": "list",
+          "cachedResultName": "cbes.101065@gmail.com"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        80,
+        -144
+      ],
+      "id": "6a10d882-369f-44b8-b331-d168257fb806",
+      "name": "Delete",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "Xj08Y7FbTwO9HweL",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "cbes.101065@gmail.com",
+          "mode": "list",
+          "cachedResultName": "cbes.101065@gmail.com"
+        },
+        "limit": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Limit', ``, 'number') }}",
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', ``, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Before', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        192,
+        -144
+      ],
+      "id": "ef6daa7f-bb2e-45f6-b1d1-a994191863c8",
+      "name": "Get Many",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "Xj08Y7FbTwO9HweL",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "calendar": {
+          "__rl": true,
+          "value": "cbes.101065@gmail.com",
+          "mode": "list",
+          "cachedResultName": "cbes.101065@gmail.com"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "updateFields": {
+          "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+          "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        304,
+        -144
+      ],
+      "id": "44feaf80-7918-45c9-bee6-1a64bd01b557",
+      "name": "Update",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "Xj08Y7FbTwO9HweL",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "discord bot",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -496,
+        -384
+      ],
+      "id": "7f00a492-9653-4b34-b944-99cc5e89a434",
+      "name": "Webhook",
+      "webhookId": "5b308306-1aac-4d40-9ac9-631adb017e2e"
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "guildId": {
+          "__rl": true,
+          "value": "1443555749786812416",
+          "mode": "list",
+          "cachedResultName": "肉鬆 的伺服器",
+          "cachedResultUrl": "https://discord.com/channels/1443555749786812416"
+        },
+        "channelId": {
+          "__rl": true,
+          "value": "1443555749786812419",
+          "mode": "list",
+          "cachedResultName": "一般",
+          "cachedResultUrl": "https://discord.com/channels/1443555749786812416/1443555749786812419"
+        },
+        "content": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        160,
+        -384
+      ],
+      "id": "ba1a5bc7-d69e-4a29-b0cb-3918802ac0a8",
+      "name": "Send a message",
+      "webhookId": "4834b200-fadd-4fb0-b286-c9b6aadfc545",
+      "credentials": {
+        "discordBotApi": {
+          "id": "9HdjJgfSqhdr1w34",
+          "name": "Discord Bot account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Many": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "e55c4f66-e650-4e83-8fe2-cf39d5f30db9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6f6f9c20fbd33c0a10d9492e4b1f65a2b426faac8529cbf03f6b29bad10359ee"
+  },
+  "id": "DBmCVrJlO7lG4kmx",
+  "tags": []
+}

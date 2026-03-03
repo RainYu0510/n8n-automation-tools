@@ -1,0 +1,213 @@
+{
+  "name": "3.Notion",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=你是 TTUSSC 資工系學生會的社團活動小助手。\n以下是所有社課和活動資料：\n{{ JSON.stringify($json.events) }}\n現在的時間是 : {{ $now }}\n請根據以上資料回答這個問題：\n{{ $('Webhook').item.json.body.original_message.cleanContent }}\n\n用繁體中文回答，簡潔清楚。\n如果問題與社課無關請回覆「我只能回答社課相關問題喔！」",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        352,
+        0
+      ],
+      "id": "3e6591f8-5eea-4539-94ad-aff00dacf632",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        352,
+        224
+      ],
+      "id": "f0ea6ae1-f505-423e-a791-27df147953a8",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "aiclNf6CddJ4EzEy",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "Discord chatbot",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -240,
+        0
+      ],
+      "id": "244e46e3-15da-4c74-adec-cf3158aec00a",
+      "name": "Webhook",
+      "webhookId": "59d2264e-4d07-46ea-b0a0-9ad120a52040"
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "guildId": {
+          "__rl": true,
+          "value": "1474717360060633119",
+          "mode": "list",
+          "cachedResultName": "行程管理助手",
+          "cachedResultUrl": "https://discord.com/channels/1474717360060633119"
+        },
+        "channelId": {
+          "__rl": true,
+          "value": "1474717362224627724",
+          "mode": "list",
+          "cachedResultName": "一般",
+          "cachedResultUrl": "https://discord.com/channels/1474717360060633119/1474717362224627724"
+        },
+        "content": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        704,
+        0
+      ],
+      "id": "aebfbb5e-9263-4ff8-84f4-a65f05c0af39",
+      "name": "Send a message",
+      "webhookId": "d9757dae-e278-4fea-bba2-40f9ac13306a",
+      "credentials": {
+        "discordBotApi": {
+          "id": "9HdjJgfSqhdr1w34",
+          "name": "Discord Bot account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "3166bbe2-d750-808e-b08a-e705fc65b7be",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://www.notion.so/3166bbe2d750808eb08ae705fc65b7be"
+        },
+        "returnAll": true,
+        "simple": "",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -32,
+        0
+      ],
+      "id": "7a7d2052-8fcc-4cec-9155-f6965696406f",
+      "name": "Get many database pages",
+      "credentials": {
+        "notionApi": {
+          "id": "VHiHlMhhmMJ0AVnB",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nconst events = items.map(item => {\n  const props = item.json.properties;\n  return {\n    時間: props.時間?.title?.[0]?.plain_text || '',\n    活動名稱: props.活動名稱?.rich_text?.[0]?.plain_text || '',\n    地點: props.地點?.select?.name || '',\n    講師: props.講師?.rich_text?.[0]?.plain_text || '',\n    類型: props.類型?.select?.name || '',\n    說明: props.說明?.rich_text?.[0]?.plain_text || '',\n    報名連結: props.報名連結?.url || ''\n  };\n});\n\nreturn [{ json: { events } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        144,
+        0
+      ],
+      "id": "fe08ebb3-c9a8-42bb-92fc-d6f2c78d9353",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get many database pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many database pages": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "f571e4f2-a749-463f-955a-1dcd1018877b",
+  "meta": {
+    "templateId": "2315",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6f6f9c20fbd33c0a10d9492e4b1f65a2b426faac8529cbf03f6b29bad10359ee"
+  },
+  "id": "7D2LrbgJkgW87zTd",
+  "tags": []
+}
