@@ -1,7 +1,5 @@
-# 🤖 n8n Automation Tools — AI Agent 課程資料
-
-> **「AI 不只有聊天？做出屬於自己的 AI Agent 吧！」** 課程的學習筆記與實作成果
-
+# 🤖 AI 不只有聊天？做出屬於自己的 AI Agent 吧！
+課程的學習筆記與實作成果
 ---
 
 ## 📖 關於這個 Repo
